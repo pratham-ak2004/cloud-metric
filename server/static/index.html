@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cloud-metric API</title>
+    <script src="/dependencies/tailwind4.js"></script>
+    <style type="text/tailwindcss">
+        @tailwind base;
+        @tailwind components;
+        @tailwind utilities;
+    
+        @layer base {
+            body {
+            font-family: 'Inter', sans-serif;
+            }
+        }
+    
+        @layer components {
+            .btn {
+            @apply inline-block px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition;
+            }
+        }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-800 font-sans">
+    <header class="bg-white shadow">
+      <div
+        class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between"
+      >
+        <h1 class="text-2xl font-bold text-indigo-600">cloud-metric</h1>
+        <nav>
+          <a href="#" class="text-gray-600 hover:text-indigo-500 mx-4"
+            >API Docs</a
+          >
+          <a
+            href="https://github.com/pratham-ak2004/cloud-metric"
+            class="text-gray-600 hover:text-indigo-500"
+            >GitHub</a
+          >
+        </nav>
+      </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-20 text-center">
+      <h2 class="text-4xl font-bold text-gray-900 mb-4">
+        Welcome to cloud-metric
+      </h2>
+      <p class="text-lg text-gray-600 mb-6">
+        Your private, customizable platform to track ML training, validation,
+        and testing metrics in the cloud.
+      </p>
+      <a
+        href="#"
+        class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition"
+      >
+        View API Documentation
+      </a>
+    </main>
+
+    <footer class="text-center text-sm text-gray-400 py-6">
+      © 2025 cloud-metric. All rights reserved.
+    </footer>
+  </body>
+</html>
