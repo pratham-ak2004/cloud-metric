@@ -9,7 +9,7 @@ app.controller("getApiController", function ($scope) {
 });
 
 app.controller("authController", function ($scope) {
-  
+  // 
 })
 
 // Theme controller

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up - cloud-metric API</title>
+
+    <script src="/dependencies/lucide.min.js"></script>
+    <script src="/dependencies/angular.min.js"></script>
+    
+    <script src="/js/global.js"></script>
+    <link rel="stylesheet" href="/css/global.out.css" />
+  </head>
+  <body ng-app="cloudMetricApp">
+    <div>
+      <div class="h-20">
+        <!-- space top -->
+      </div>
+      <!-- Navbar -->
+      <header class="backdrop-blur-sm shadow-xl fixed w-full top-0 z-50 dark:shadow-slate-500/10 dark:shadow-xl">
+        <div
+          class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between"
+        >
+          <h1 class="text-play text-2xl font-bold">
+            <a href="/">Cloud Metric</a>
+          </h1>
+          <nav class="flex items-center">
+            <!-- nav items -->
+            <a
+              href="#"
+              class="text-muted-foreground hover:text-primary flex flex-col items-center mx-4 group"
+              >API Docs
+              <div
+                class="bg-black dark:bg-white h-px transition-all duration-400 group-hover:w-full w-0"
+              ></div>
+            </a>
+            <a
+              href="https://github.com/pratham-ak2004/cloud-metric"
+              class="text-muted-foreground flex flex-col items-center hover:text-primary group"
+              >GitHub
+              <div
+                class="bg-black dark:bg-white h-px transition-all duration-400 group-hover:w-full w-0"
+              ></div>
+            </a>
+            <!-- Auth -->
+            <div ng-controller="authController">
+              <a class="ml-4 button button-secondary" href="/login.html">Login</a>
+              <a class="button button-primary ml-2" href="/signup.html">Sign Up</a>
+            </div>
+            <!-- Theme toggle -->
+            <div ng-controller="themeController" class="ml-4">
+              <button
+                class="theme-toggle p-1 rounded-full button-ghost"
+                ng-click="toggleTheme()"
+                aria-label="Toggle theme"
+              >
+                <i ng-if="!isDarkMode" data-lucide="sun"></i>
+                <i ng-if="isDarkMode" data-lucide="moon"></i>
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
+
+      <main class="max-w-md mx-auto px-4 py-20">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl mb-2">Create an Account</h2>
+          <p class="text-muted-foreground">Join <span class="text-play">Cloud Metric</span> to start tracking metrices</p>
+        </div>
+        
+        <div class="bg-card p-6 rounded-lg shadow-lg">
+          <form ng-controller="signupController" ng-submit="submitSignup()">
+            <div class="mb-4">
+              <label for="name" class="block mb-2 text-sm font-medium">Full Name</label>
+              <input 
+                type="text" 
+                id="name" 
+                ng-model="formData.name"
+                class="w-full p-2 border rounded-md bg-background border-input focus:outline-none focus:ring-2 focus:ring-primary" 
+                placeholder="Enter your full name"
+                required
+              />
+            </div>
+            
+            <div class="mb-4">
+              <label for="signup-email" class="block mb-2 text-sm font-medium">Email</label>
+              <input 
+                type="email" 
+                id="signup-email" 
+                ng-model="formData.email"
+                class="w-full p-2 border rounded-md bg-background border-input focus:outline-none focus:ring-2 focus:ring-primary" 
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+            
+            <div class="mb-4">
+              <label for="signup-password" class="block mb-2 text-sm font-medium">Password</label>
+              <input 
+                type="password"
+                id="signup-password" 
+                ng-model="formData.password"
+                class="w-full p-2 border rounded-md bg-background border-input focus:outline-none focus:ring-2 focus:ring-primary" 
+                placeholder="Create a password"
+                required
+              />
+              <p class="text-xs text-muted-foreground mt-1">Password must be at least 8 characters</p>
+            </div>
+            
+            <div class="mb-6">
+              <label for="confirm-password" class="block mb-2 text-sm font-medium">Confirm Password</label>
+              <input 
+                type="password" 
+                id="confirm-password" 
+                ng-model="confirmPassword"
+                class="w-full p-2 border rounded-md bg-background border-input focus:outline-none focus:ring-2 focus:ring-primary" 
+                placeholder="Confirm your password"
+                required
+              />
+            </div>
+            
+            <div class="mb-4">
+              <button type="submit" class="w-full button button-primary py-2">
+                Create Account
+              </button>
+            </div>
+          </form>
+          
+          <div class="text-center text-sm mt-4">
+            <span class="text-muted-foreground">Already have an account?</span>
+            <a href="/login.html" class="text-primary hover:text-secondary underline ml-1">Sign in</a>
+          </div>
+        </div>
+      </main>
+
+      <footer class="text-center text-sm text-muted-foreground py-6">
+        © 2025 cloud-metric. All rights reserved.
+      </footer>
+    </div>
+  </body>
+
+  <script src="/js/signup.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</html>

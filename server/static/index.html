@@ -42,13 +42,13 @@
             </a>
             <!-- Auth -->
             <div ng-controller="authController">
-              <button class="ml-4 button-secondary">Login</button>
-              <button class="button-primary ml-2">Sign Up</button>
+              <a class="ml-4 button-secondary" href="/login.html">Login</a>
+              <a class="button-primary ml-2" href="/signup.html">Sign Up</a>
             </div>
-            <!-- Theme toggle with improved styling -->
-            <div ng-controller="themeController">
+            <!-- Theme toggle -->
+            <div ng-controller="themeController" class="ml-4">
               <button
-                class="ml-4 theme-toggle p-2 rounded-full"
+                class="theme-toggle p-1 rounded-full button-ghost"
                 ng-click="toggleTheme()"
                 aria-label="Toggle theme"
               >
