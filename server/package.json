@@ -1,0 +1,11 @@
+{
+  "name": "cloud-metric-api",
+  "version": "1.0.0",
+  "author": "pratham-ak2004",
+  "license": "ISC",
+  "description": "An api for storing model metrics in cloud",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.5",
+    "tailwindcss": "4"
+  }
+}

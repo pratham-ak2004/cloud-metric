@@ -39,8 +39,8 @@ watch:
 	else \
 	    read -p "Go's 'air' is not installed on your machine. Do you want to install it? [Y/n] " choice; \
 	    if [ "$$choice" != "n" ] && [ "$$choice" != "N" ]; then \
-	        curl -sSfL https://raw.githubusercontent.com/air-verse/air/master/install.sh | sh -s \
-	        ./bin/air; \
+	        curl -sSfL https://raw.githubusercontent.com/air-verse/air/master/install.sh | sh -s -- -b ./bin; \
+	        ./bin/air -c .air.toml -- -h; \
 	        echo "Watching...";\
 	    else \
 	        echo "You chose not to install air. Exiting..."; \
@@ -108,3 +108,6 @@ generate:
 	@echo "Generating db with SQLC..."
 	sqlc generate
 	@echo "Code generation complete."
+
+watch-css:
+	npx tailwindcss -i ./static/css/global.css -o ./static/css/global.out.css --watch

@@ -4,62 +4,88 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>cloud-metric API</title>
-    <script src="/dependencies/tailwind4.js"></script>
-    <style type="text/tailwindcss">
-        @tailwind base;
-        @tailwind components;
-        @tailwind utilities;
+
+    <script src="/dependencies/lucide.min.js"></script>
+    <script src="/dependencies/angular.min.js"></script>
     
-        @layer base {
-            body {
-            font-family: 'Inter', sans-serif;
-            }
-        }
-    
-        @layer components {
-            .btn {
-            @apply inline-block px-4 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition;
-            }
-        }
-    </style>
+    <script src="/js/global.js"></script>
+    <link rel="stylesheet" href="/css/global.out.css" />
   </head>
-  <body class="bg-gray-50 text-gray-800 font-sans">
-    <header class="bg-white shadow">
-      <div
-        class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between"
-      >
-        <h1 class="text-2xl font-bold text-indigo-600">cloud-metric</h1>
-        <nav>
-          <a href="#" class="text-gray-600 hover:text-indigo-500 mx-4"
-            >API Docs</a
-          >
-          <a
-            href="https://github.com/pratham-ak2004/cloud-metric"
-            class="text-gray-600 hover:text-indigo-500"
-            >GitHub</a
-          >
-        </nav>
+  <body ng-app="cloudMetricApp">
+    <div>
+      <div class="h-20">
+        <!-- space top -->
       </div>
-    </header>
+      <!-- Navbar -->
+      <header class="backdrop-blur-sm shadow-xl fixed w-full top-0 z-50 dark:shadow-slate-500/10 dark:shadow-xl">
+        <div
+          class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between"
+        >
+          <h1 class="text-play text-2xl font-bold">Cloud Metric</h1>
+          <nav class="flex items-center">
+            <!-- nav items -->
+            <a
+              href="#"
+              class="text-muted-foreground hover:text-primary flex flex-col items-center mx-4 group"
+              >API Docs
+              <div
+                class="bg-black dark:bg-white h-px transition-all duration-400 group-hover:w-full w-0"
+              ></div>
+            </a>
+            <a
+              href="https://github.com/pratham-ak2004/cloud-metric"
+              class="text-muted-foreground flex flex-col items-center hover:text-primary group"
+              >GitHub
+              <div
+                class="bg-black dark:bg-white h-px transition-all duration-400 group-hover:w-full w-0"
+              ></div>
+            </a>
+            <!-- Auth -->
+            <div ng-controller="authController">
+              <button class="ml-4 button-secondary">Login</button>
+              <button class="button-primary ml-2">Sign Up</button>
+            </div>
+            <!-- Theme toggle with improved styling -->
+            <div ng-controller="themeController">
+              <button
+                class="ml-4 theme-toggle p-2 rounded-full"
+                ng-click="toggleTheme()"
+                aria-label="Toggle theme"
+              >
+                <i ng-if="!isDarkMode" data-lucide="sun"></i>
+                <i ng-if="isDarkMode" data-lucide="moon"></i>
+              </button>
+            </div>
+          </nav>
+        </div>
+      </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-20 text-center">
-      <h2 class="text-4xl font-bold text-gray-900 mb-4">
-        Welcome to cloud-metric
-      </h2>
-      <p class="text-lg text-gray-600 mb-6">
-        Your private, customizable platform to track ML training, validation,
-        and testing metrics in the cloud.
-      </p>
-      <a
-        href="#"
-        class="inline-block px-6 py-3 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700 transition"
-      >
-        View API Documentation
-      </a>
-    </main>
+      <main class="max-w-6xl mx-auto px-4 py-20 text-center">
+        <h2 class="text-4xl mb-4">
+          Welcome to <span class="text-play font-bold">cloud metric</span>
+        </h2>
+        <p class="text-lg text-muted-foreground mb-6">
+          Your private, customizable platform to track ML training, validation,
+          and testing metrics in the cloud.
+        </p>
+        <div ng-controller="getApiController">
+          <button ng-click="getApiKey()" class="button-outline mx-2">
+            Get API Key
+          </button>
+          <a href="#" class="button-primary inline-block">
+            View API Documentation
+          </a>
+        </div>
+      </main>
 
-    <footer class="text-center text-sm text-gray-400 py-6">
-      © 2025 cloud-metric. All rights reserved.
-    </footer>
+      <footer class="text-center text-sm text-muted-foreground py-6">
+        © 2025 cloud-metric. All rights reserved.
+      </footer>
+    </div>
   </body>
+
+  <script src="/js/index.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
 </html>
