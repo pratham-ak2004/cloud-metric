@@ -9,61 +9,70 @@ import (
 )
 
 type Api struct {
-	ID           int32
-	UserID       pgtype.Int4
-	Name         string
-	IsActive     pgtype.Bool
-	ClientID     string
-	ClientSecret string
+	ID       pgtype.UUID
+	Name     string
+	IsActive pgtype.Bool
+	Apikey   string
+	UserID   pgtype.UUID
 }
 
 type Epoch struct {
-	ID         int32
-	TrainRunID pgtype.Int4
+	ID         pgtype.UUID
 	EpochNo    int32
 	Type       pgtype.Text
 	CreatedAt  pgtype.Timestamp
 	UpdatedAt  pgtype.Timestamp
+	TrainRunID pgtype.UUID
 }
 
 type Metric struct {
-	EpochID int32
+	EpochID pgtype.UUID
 	Key     string
 	Value   float64
 }
 
 type Model struct {
-	ID          int32
-	UserID      pgtype.Int4
+	ID          pgtype.UUID
 	Name        string
 	Description pgtype.Text
 	CreatedAt   pgtype.Timestamp
 	UpdatedAt   pgtype.Timestamp
+	UserID      pgtype.UUID
 }
 
 type ModelVersion struct {
-	ID        int32
-	ModelID   pgtype.Int4
+	ID        pgtype.UUID
 	Version   string
 	Path      pgtype.Text
 	Config    []byte
 	CreatedAt pgtype.Timestamp
 	UpdatedAt pgtype.Timestamp
+	ModelID   pgtype.UUID
+}
+
+type Session struct {
+	ID           pgtype.UUID
+	Sessiontoken string
+	Refreshtoken string
+	ExpiresAt    pgtype.Timestamp
+	CreatedAt    pgtype.Timestamp
+	UpdatedAt    pgtype.Timestamp
+	UserID       pgtype.UUID
 }
 
 type TrainRun struct {
-	ID              int32
-	ModelVersionID  pgtype.Int4
+	ID              pgtype.UUID
 	RunName         pgtype.Text
 	Hyperparameters []byte
 	StartedAt       pgtype.Timestamp
 	FinishedAt      pgtype.Timestamp
 	CreatedAt       pgtype.Timestamp
 	UpdatedAt       pgtype.Timestamp
+	ModelVersionID  pgtype.UUID
 }
 
 type User struct {
-	ID        int32
+	ID        pgtype.UUID
 	Name      string
 	Email     string
 	Password  string

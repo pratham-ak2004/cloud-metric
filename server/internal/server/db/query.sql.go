@@ -7,6 +7,8 @@ package db
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const addUser = `-- name: AddUser :one
@@ -22,6 +24,76 @@ type AddUserParams struct {
 
 func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) (User, error) {
 	row := q.db.QueryRow(ctx, addUser, arg.Email, arg.Name, arg.Password)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const createSession = `-- name: CreateSession :one
+INSERT INTO "Session" (sessionToken, refreshtoken, expires_at, user_id) VALUES ($1, $2, $3, $4)
+RETURNING id, sessiontoken, refreshtoken, expires_at, created_at, updated_at, user_id
+`
+
+type CreateSessionParams struct {
+	Sessiontoken string
+	Refreshtoken string
+	ExpiresAt    pgtype.Timestamp
+	UserID       pgtype.UUID
+}
+
+func (q *Queries) CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error) {
+	row := q.db.QueryRow(ctx, createSession,
+		arg.Sessiontoken,
+		arg.Refreshtoken,
+		arg.ExpiresAt,
+		arg.UserID,
+	)
+	var i Session
+	err := row.Scan(
+		&i.ID,
+		&i.Sessiontoken,
+		&i.Refreshtoken,
+		&i.ExpiresAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+	)
+	return i, err
+}
+
+const deleteSession = `-- name: DeleteSession :one
+DELETE FROM "Session" WHERE sessiontoken = $1
+RETURNING id, sessiontoken, refreshtoken, expires_at, created_at, updated_at, user_id
+`
+
+func (q *Queries) DeleteSession(ctx context.Context, sessiontoken string) (Session, error) {
+	row := q.db.QueryRow(ctx, deleteSession, sessiontoken)
+	var i Session
+	err := row.Scan(
+		&i.ID,
+		&i.Sessiontoken,
+		&i.Refreshtoken,
+		&i.ExpiresAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+	)
+	return i, err
+}
+
+const getSessionUser = `-- name: GetSessionUser :one
+SELECT id, name, email, password, created_at, updated_at FROM "User" WHERE id = (SELECT user_id FROM "Session" WHERE sessionToken = $1)
+`
+
+func (q *Queries) GetSessionUser(ctx context.Context, sessiontoken string) (User, error) {
+	row := q.db.QueryRow(ctx, getSessionUser, sessiontoken)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -56,7 +128,7 @@ const getUserById = `-- name: GetUserById :one
 SELECT id, name, email, password, created_at, updated_at FROM "User" WHERE id = $1
 `
 
-func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
+func (q *Queries) GetUserById(ctx context.Context, id pgtype.UUID) (User, error) {
 	row := q.db.QueryRow(ctx, getUserById, id)
 	var i User
 	err := row.Scan(
@@ -95,4 +167,36 @@ func (q *Queries) ListUsers(ctx context.Context) ([]ListUsersRow, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateSession = `-- name: UpdateSession :one
+UPDATE "Session" SET sessionToken = $1, refreshToken = $2, expires_at = $3 WHERE refreshtoken = $4
+RETURNING id, sessiontoken, refreshtoken, expires_at, created_at, updated_at, user_id
+`
+
+type UpdateSessionParams struct {
+	Sessiontoken   string
+	Refreshtoken   string
+	ExpiresAt      pgtype.Timestamp
+	Refreshtoken_2 string
+}
+
+func (q *Queries) UpdateSession(ctx context.Context, arg UpdateSessionParams) (Session, error) {
+	row := q.db.QueryRow(ctx, updateSession,
+		arg.Sessiontoken,
+		arg.Refreshtoken,
+		arg.ExpiresAt,
+		arg.Refreshtoken_2,
+	)
+	var i Session
+	err := row.Scan(
+		&i.ID,
+		&i.Sessiontoken,
+		&i.Refreshtoken,
+		&i.ExpiresAt,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+	)
+	return i, err
 }

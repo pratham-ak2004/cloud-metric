@@ -1,8 +1,22 @@
-@import url("https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Play:wght@400;700&display=swap"); */
 @import "tailwindcss";
 
 @tailwind utilities;
 @custom-variant dark (&:where(.dark, .dark *));
+
+@font-face {
+  font-family: Play;
+  src: url("/dependencies/Play/Play-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: Play;
+  src: url("/dependencies/Play/Play-Bold.ttf") format("truetype");
+  font-style: normal;
+  font-display: swap;
+}
 
 /* css variables for light and dark theme */
 :root {
@@ -58,13 +72,13 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
 
-  --color-secondary: var(colors.secondary);
+  --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
 
-  --color-muted: var(colors.muted);
+  --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
 
-  --color-accent: var(colors.accent);
+  --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
 
   --color-destructive: var(--destructive);

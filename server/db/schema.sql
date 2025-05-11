@@ -6,72 +6,102 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- createTable
 -- User table
 CREATE TABLE "User" (
-    id SERIAL PRIMARY KEY,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
     name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Sessions table
+CREATE TABLE "Session" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    sessionToken TEXT UNIQUE NOT NULL,
+    refreshToken TEXT UNIQUE NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    user_id UUID REFERENCES "User"(id) ON DELETE CASCADE
 );
 
 -- API clients table
 CREATE TABLE "Api" (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES "User"(id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
     name TEXT NOT NULL,
     is_active BOOLEAN DEFAULT TRUE,
-    client_id TEXT UNIQUE NOT NULL,
-    client_secret TEXT NOT NULL
+    apiKey TEXT UNIQUE NOT NULL,
+
+    user_id UUID REFERENCES "User"(id) ON DELETE CASCADE
 );
 
 -- Models table
 CREATE TABLE "Model" (
-    id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES "User"(id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
     name TEXT NOT NULL,
     description TEXT,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    user_id UUID REFERENCES "User"(id) ON DELETE CASCADE
 );
 
 -- Model Versions table
 CREATE TABLE "ModelVersion" (
-    id SERIAL PRIMARY KEY,
-    model_id INTEGER REFERENCES "Model"(id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
     version TEXT NOT NULL,
     path TEXT,
     config JSONB,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    model_id UUID REFERENCES "Model"(id) ON DELETE CASCADE
 );
 
 -- Training Runs table
 CREATE TABLE "TrainRun" (
-    id SERIAL PRIMARY KEY,
-    model_version_id INTEGER REFERENCES "ModelVersion"(id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
     run_name TEXT,
     hyperparameters JSONB,
     started_at TIMESTAMP,
     finished_at TIMESTAMP,
+    
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    model_version_id UUID REFERENCES "ModelVersion"(id) ON DELETE CASCADE
 );
 
 -- Epochs table
 CREATE TABLE "Epoch" (
-    id SERIAL PRIMARY KEY,
-    train_run_id INTEGER REFERENCES "TrainRun"(id) ON DELETE CASCADE,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
     epoch_no INTEGER NOT NULL,
     type TEXT CHECK (type IN ('train', 'val', 'test')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    train_run_id UUID REFERENCES "TrainRun"(id) ON DELETE CASCADE
 );
 
 -- Metrics table
 CREATE TABLE "Metric" (
-    epoch_id INTEGER REFERENCES "Epoch"(id) ON DELETE CASCADE,
+    epoch_id UUID REFERENCES "Epoch"(id) ON DELETE CASCADE,
+
     key TEXT NOT NULL,
     value DOUBLE PRECISION NOT NULL,
+
     PRIMARY KEY (epoch_id, key)
 );
 
@@ -107,5 +137,10 @@ EXECUTE FUNCTION set_current_timestamp();
 
 CREATE TRIGGER updated_at_epoch_trigger
 BEFORE UPDATE ON "Epoch"
+FOR EACH ROW
+EXECUTE FUNCTION set_current_timestamp();
+
+CREATE TRIGGER updated_at_session_trigger
+BEFORE UPDATE ON "Session"
 FOR EACH ROW
 EXECUTE FUNCTION set_current_timestamp();

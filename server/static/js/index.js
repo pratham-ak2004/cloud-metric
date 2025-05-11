@@ -9,12 +9,48 @@ app.controller("getApiController", function ($scope) {
 });
 
 app.controller("authController", function ($scope) {
-  // 
-})
+  $scope.isLoggedIn = false;
+
+  async function getSession() {
+    const res = await fetch("/api/auth/session", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+
+      $scope.isLoggedIn = true;
+      $scope.$apply();
+    }
+  }
+
+  getSession();
+
+  $scope.logout = async function () {
+    const res = await fetch("/api/auth/logout", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (res.ok) {
+      localStorage.removeItem("token");
+      $scope.isLoggedIn = false;
+      $scope.$apply();
+    } else {
+      alert("Logout failed");
+    }
+  };
+});
 
 // Theme controller
 app.controller("themeController", function ($scope) {
-
   // Toggle theme function
   $scope.toggleTheme = function () {
     $scope.isDarkMode = !$scope.isDarkMode;

@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign Up - cloud-metric API</title>
-
-    <link rel="stylesheet" href="/css/global.out.css" />
-    <script src="/js/global.js"></script>
+    <title>Login - cloud-metric API</title>
 
     <script src="/dependencies/lucide.min.js"></script>
     <script src="/dependencies/angular.min.js"></script>
+
+    <script src="/js/global.js"></script>
+    <link rel="stylesheet" href="/css/global.out.css" />
   </head>
   <body ng-app="cloudMetricApp">
     <div>
@@ -17,7 +17,9 @@
         <!-- space top -->
       </div>
       <!-- Navbar -->
-      <header class="backdrop-blur-md fixed w-full top-0 z-50">
+      <header
+        class="backdrop-blur-sm shadow-xl fixed w-full top-0 z-50 dark:shadow-slate-500/10 dark:shadow-xl"
+      >
         <div
           class="max-w-6xl mx-auto px-4 py-6 flex items-center justify-between"
         >
@@ -51,7 +53,7 @@
                 >Sign Up</a
               >
             </div>
-            <!-- Theme toggle -->
+            <!-- Theme toggle with improved styling -->
             <div ng-controller="themeController" class="ml-4">
               <button
                 class="theme-toggle p-1 rounded-full button-ghost"
@@ -68,38 +70,30 @@
 
       <main class="max-w-md mx-auto px-4 py-20">
         <div class="text-center mb-8">
-          <h2 class="text-3xl mb-2">Create an Account</h2>
+          <h2 class="text-3xl mb-2">Welcome Back</h2>
           <p class="text-muted-foreground">
-            Join <span class="text-play">Cloud Metric</span> to start tracking
-            metrices
+            Sign in to your <span class="text-play">Cloud Metric</span> account
           </p>
         </div>
 
         <div
           class="bg-secondary border border-primary-foreground p-6 rounded-lg"
         >
-          <form ng-controller="signupController" ng-submit="submitSignup()">
-            <div class="mb-4">
-              <label for="name" class="block mb-2 text-sm font-medium"
-                >Full Name</label
-              >
-              <input
-                type="text"
-                id="name"
-                ng-model="formData.name"
-                class="w-full p-2 border rounded-md bg-background border-input focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Enter your full name"
-                required
-              />
+          <form ng-controller="loginController" ng-submit="submitLogin()">
+            <div
+              ng-if="loginError"
+              class="flex justify-center border border-destructive bg-destructive/50 rounded-md p-2 mb-4 gap-2 items-center"
+            >
+              <i class="size-5" data-lucide="info"></i>
+              <p>{{ errorMessage }}</p>
             </div>
-
             <div class="mb-4">
-              <label for="user-email" class="block mb-2 text-sm font-medium"
+              <label for="email" class="block mb-2 text-sm font-medium"
                 >Email</label
               >
               <input
                 type="email"
-                id="user-email"
+                id="email"
                 ng-model="formData.email"
                 class="w-full p-2 border rounded-md bg-background border-input focus:outline-none focus:ring-2 focus:ring-primary"
                 placeholder="Enter your email"
@@ -107,67 +101,33 @@
               />
             </div>
 
-            <div class="mb-4">
-              <label
-                for="signup-password"
-                class="block mb-2 text-sm font-medium"
-                >Password</label
-              >
+            <div class="mb-6">
+              <div class="flex justify-between mb-2">
+                <label for="password" class="text-sm font-medium"
+                  >Password</label
+                >
+              </div>
               <input
                 type="password"
-                id="signup-password"
+                id="password"
                 ng-model="formData.password"
                 class="w-full p-2 border rounded-md bg-background border-input focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Create a password"
+                placeholder="Enter your password"
                 required
               />
-              <p ng-if="!isPasswordValid" class="text-xs text-destructive mt-1 flex flex-nowrap flex-row gap-2 items-center">
-                <i class="size-5" data-lucide="info"></i>
-                Password must be at least 8 characters
-              </p>
-              <p
-                ng-if="isPasswordValid"
-                class="text-xs text-muted-foreground mt-1"
-              >
-                Password must be at least 8 characters
-              </p>
-            </div>
-
-            <div class="mb-6">
-              <label
-                for="confirm-password"
-                class="block mb-2 text-sm font-medium"
-                >Confirm Password</label
-              >
-              <input
-                type="password"
-                id="confirm-password"
-                ng-model="confirmPassword"
-                class="w-full p-2 border rounded-md bg-background border-input focus:outline-none focus:ring-2 focus:ring-primary"
-                placeholder="Confirm your password"
-                required
-              />
-              <p
-                class="text-destructive text-sm flex flex-nowrap flex-row gap-2 items-center mt-1"
-                ng-if="!isPasswordMatch"
-              >
-                <i class="size-5" data-lucide="info"></i>Passwords do not match
-              </p>
             </div>
 
             <div class="mb-4">
               <button type="submit" class="w-full button button-primary py-2">
-                Create Account
+                Sign In
               </button>
             </div>
           </form>
 
           <div class="text-center text-sm mt-4">
-            <span class="text-muted-foreground">Already have an account?</span>
-            <a
-              href="/login.html"
-              class="text-primary hover:text-secondary underline ml-1"
-              >Sign in</a
+            <span class="text-muted-foreground">Don't have an account?</span>
+            <a href="/signup.html" class="text-primary hover:underline ml-1"
+              >Sign up</a
             >
           </div>
         </div>
@@ -179,7 +139,7 @@
     </div>
   </body>
 
-  <script src="/js/signup.js"></script>
+  <script src="/js/login.js"></script>
   <script>
     lucide.createIcons();
   </script>
