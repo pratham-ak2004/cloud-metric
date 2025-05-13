@@ -23,5 +23,5 @@ RETURNING *;
 SELECT * FROM "User" WHERE id = (SELECT user_id FROM "Session" WHERE sessionToken = $1);
 
 -- name: UpdateSession :one
-UPDATE "Session" SET sessionToken = $1, refreshToken = $2, expires_at = $3 WHERE refreshtoken = $4
+UPDATE "Session" SET sessionToken = $1, refreshToken = $2, expires_at = $3 WHERE sessionToken = $4
 RETURNING *;

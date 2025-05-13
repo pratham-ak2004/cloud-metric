@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -11,11 +12,23 @@ import (
 	server "github.com/pratham-ak2004/cloud-metric/server/internal/server"
 )
 
+func Ping(w http.ResponseWriter, r *http.Request) {
+	response := map[string]string{"message": "pong"}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		http.Error(w, "Internal server Error", http.StatusInternalServerError)
+	}
+}
+
 func bindRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("/api/auth/signup", routes.POST(handlers.SignUpAPI))
 	mux.HandleFunc("/api/auth/login", routes.POST(handlers.LoginAPI))
-	mux.HandleFunc("/api/auth/logout", routes.POST(handlers.LogoutAPI))
-	mux.HandleFunc("/api/auth/session", routes.GET(middleware.AuthMiddleware(handlers.GetSessionUser)))
+	mux.HandleFunc("/api/auth/logout", routes.POST(middleware.GlobalMiddleWare(handlers.LogoutAPI)))
+	mux.HandleFunc("/api/auth/session", routes.GET(middleware.ProtectedMiddleware(handlers.GetSessionUser)))
+
+	mux.HandleFunc("/api/ping", routes.GET(Ping))
 }
 
 func main() {
@@ -31,7 +44,7 @@ func main() {
 	server.SetDB(db)
 
 	mux := server.GetMux()
-	server.SetFileServer(mux, "./static", "/api")
+	// server.SetFileServer(mux, "./static", "/api")
 	routes.BindRoutes(mux, bindRoutes)
 
 	server := server.CreateServer(host+":"+port, mux)

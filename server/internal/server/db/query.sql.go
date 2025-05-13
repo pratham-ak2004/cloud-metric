@@ -170,7 +170,7 @@ func (q *Queries) ListUsers(ctx context.Context) ([]ListUsersRow, error) {
 }
 
 const updateSession = `-- name: UpdateSession :one
-UPDATE "Session" SET sessionToken = $1, refreshToken = $2, expires_at = $3 WHERE refreshtoken = $4
+UPDATE "Session" SET sessionToken = $1, refreshToken = $2, expires_at = $3 WHERE sessionToken = $4
 RETURNING id, sessiontoken, refreshtoken, expires_at, created_at, updated_at, user_id
 `
 
@@ -178,7 +178,7 @@ type UpdateSessionParams struct {
 	Sessiontoken   string
 	Refreshtoken   string
 	ExpiresAt      pgtype.Timestamp
-	Refreshtoken_2 string
+	Sessiontoken_2 string
 }
 
 func (q *Queries) UpdateSession(ctx context.Context, arg UpdateSessionParams) (Session, error) {
@@ -186,7 +186,7 @@ func (q *Queries) UpdateSession(ctx context.Context, arg UpdateSessionParams) (S
 		arg.Sessiontoken,
 		arg.Refreshtoken,
 		arg.ExpiresAt,
-		arg.Refreshtoken_2,
+		arg.Sessiontoken_2,
 	)
 	var i Session
 	err := row.Scan(

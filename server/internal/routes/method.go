@@ -40,3 +40,14 @@ func POST(next http.HandlerFunc) http.HandlerFunc {
 		}
 	})
 }
+
+func ServFile(path string) http.HandlerFunc {
+	return logPack.Timer(colors["green"]+"File", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
+			return
+		} else {
+			http.ServeFile(w, r, path)
+		}
+	})
+}

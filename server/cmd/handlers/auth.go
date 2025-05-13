@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/pratham-ak2004/cloud-metric/server/internal/server"
 	database "github.com/pratham-ak2004/cloud-metric/server/internal/server/db"
+	"github.com/pratham-ak2004/cloud-metric/server/internal/types"
 	"github.com/pratham-ak2004/cloud-metric/server/internal/utils"
 )
 
@@ -96,13 +97,18 @@ func LoginAPI(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionToken, refreshToken, expiry := utils.GenerateSessionId()
+	session, err := utils.GenerateSession()
+
+	if err != nil {
+		http.Error(w, "Error generating session", http.StatusInternalServerError)
+		return
+	}
 
 	_, err = db.CreateSession(context.Background(), database.CreateSessionParams{
-		Sessiontoken: sessionToken.String(),
-		Refreshtoken: refreshToken.String(),
+		Sessiontoken: session.SessionId.String(),
+		Refreshtoken: session.RefreshJwt,
 		UserID:       user.ID,
-		ExpiresAt:    pgtype.Timestamp{Time: expiry, Valid: true},
+		ExpiresAt:    pgtype.Timestamp{Time: session.Expiry, Valid: true},
 	})
 
 	if err != nil {
@@ -123,17 +129,17 @@ func LoginAPI(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
-		Value:    sessionToken.String(),
+		Name:     utils.SESSION_TOKEN_NAME,
+		Value:    session.SessionId.String(),
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   true,
 		SameSite: http.SameSiteStrictMode,
-		MaxAge:   int(time.Until(expiry).Seconds()),
+		MaxAge:   int(time.Until(session.Expiry).Seconds()),
 	})
 	http.SetCookie(w, &http.Cookie{
-		Name:     "refresh_token",
-		Value:    refreshToken.String(),
+		Name:     utils.REFRESH_JWT_NAME,
+		Value:    session.RefreshJwt,
 		Path:     "/",
 		HttpOnly: true,
 		Secure:   true,
@@ -151,10 +157,11 @@ func LoginAPI(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutAPI(w http.ResponseWriter, r *http.Request) {
-	session, _ := r.Cookie("session_token")
+	// session, _ := r.Cookie(utils.SESSION_TOKEN_NAME)
+	session := r.Context().Value(types.SessionKey).(types.SessionData)
 
 	http.SetCookie(w, &http.Cookie{
-		Name:     "session_token",
+		Name:     utils.SESSION_TOKEN_NAME,
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
@@ -163,7 +170,7 @@ func LogoutAPI(w http.ResponseWriter, r *http.Request) {
 		MaxAge:   -1,
 	})
 	http.SetCookie(w, &http.Cookie{
-		Name:     "refresh_token",
+		Name:     utils.REFRESH_JWT_NAME,
 		Value:    "",
 		Path:     "/",
 		HttpOnly: true,
@@ -172,9 +179,15 @@ func LogoutAPI(w http.ResponseWriter, r *http.Request) {
 		MaxAge:   -1,
 	})
 
-	if session != nil {
+	if session.Valid {
 		db := server.GetDB()
-		db.DeleteSession(context.Background(), session.Value)
+		db.DeleteSession(context.Background(), session.Token)
+	}
+
+	redirect := r.URL.Query().Get("redirect")
+
+	if redirect == "" {
+		redirect = "/"
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -182,7 +195,7 @@ func LogoutAPI(w http.ResponseWriter, r *http.Request) {
 	response := map[string]string{
 		"message":  "Logged out successfully",
 		"status":   "success",
-		"redirect": "/",
+		"redirect": redirect,
 	}
 	if err := json.NewEncoder(w).Encode(response); err != nil {
 		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
@@ -190,81 +203,37 @@ func LogoutAPI(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// func RefreshSessionAPI(w http.ResponseWriter, r *http.Request) {
-// 	refreshToken, err := r.Cookie("refresh_token")
-
-// 	if err != nil {
-// 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
-// 		return
-// 	}
-
-// 	db := server.GetDB()
-
-// 	newSessionToken, newRefreshToken, expiry := utils.GenerateSessionId()
-
-// 	_, err = db.UpdateSession(context.Background(), database.UpdateSessionParams{
-// 		Sessiontoken:   newSessionToken.String(),
-// 		Refreshtoken:   newRefreshToken.String(),
-// 		ExpiresAt:      pgtype.Timestamp{Time: expiry, Valid: true},
-// 		Refreshtoken_2: refreshToken.Value,
-// 	})
-
-// 	if err != nil {
-// 		http.Error(w, "Error creating session", http.StatusInternalServerError)
-// 		return
-// 	}
-
-// 	http.SetCookie(w, &http.Cookie{
-// 		Name:     "session_token",
-// 		Value:    newSessionToken.String(),
-// 		Path:     "/",
-// 		HttpOnly: true,
-// 		Secure:   true,
-// 		SameSite: http.SameSiteStrictMode,
-// 		MaxAge:   int(time.Until(expiry).Seconds()),
-// 	})
-// 	http.SetCookie(w, &http.Cookie{
-// 		Name:     "refresh_token",
-// 		Value:    newRefreshToken.String(),
-// 		Path:     "/",
-// 		HttpOnly: true,
-// 		Secure:   true,
-// 		SameSite: http.SameSiteStrictMode,
-// 		MaxAge:   int(utils.REFRESH_LIFETIME),
-// 	})
-
-// 	response := map[string]string{
-// 		"message": "Session retrieved successfully",
-// 		"status":  "success",
-// 	}
-
-// 	w.Header().Set("Content-Type", "application/json")
-// 	w.WriteHeader(http.StatusOK)
-
-// 	if err := json.NewEncoder(w).Encode(response); err != nil {
-// 		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
-// 		return
-// 	}
-// }
-
 func GetSessionUser(w http.ResponseWriter, r *http.Request) {
-	user := r.Context().Value("user").(database.User)
+	sessionData := r.Context().Value(types.SessionKey).(types.SessionData)
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
+	if sessionData.Valid {
+		db := server.GetDB()
 
-	response := map[string]interface{}{
-		"message": "User retrieved successfully",
-		"status":  "success",
-		"user": map[string]interface{}{
-			"id":    user.ID,
-			"name":  user.Name,
-			"email": user.Email,
-		},
-	}
+		user, err := db.GetSessionUser(context.Background(), sessionData.Token)
 
-	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
-		return
+		if err != nil {
+			http.Error(w, "Error retrieving user", http.StatusInternalServerError)
+			return
+		}
+
+		response := map[string]interface{}{
+			"message": "User retrieved successfully",
+			"status":  "success",
+			"user": map[string]interface{}{
+				"id":    user.ID,
+				"name":  user.Name,
+				"email": user.Email,
+			},
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			http.Error(w, "Error encoding JSON", http.StatusInternalServerError)
+			return
+		}
+	} else {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	}
 }

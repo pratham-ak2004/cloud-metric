@@ -1,18 +1,20 @@
 package utils
 
 import (
+	"fmt"
 	"time"
 
-	types "github.com/pratham-ak2004/cloud-metric/server/internal/types"
-
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
 	"github.com/pratham-ak2004/cloud-metric/server/internal/logger"
 	"golang.org/x/crypto/bcrypt"
 )
 
-const SESSION_LIFETIME = 7 * 24 * time.Hour
+const SESSION_LIFETIME = 1 * 24 * time.Hour  // 1 day
 const REFRESH_LIFETIME = 30 * 24 * time.Hour // 30 days
+
+const SESSION_TOKEN_NAME = "session_id"
+const REFRESH_JWT_NAME = "refresh_jwt"
 
 func HashPassword(val string) (string, error) {
 	secret := logger.GetEnv("AUTH_SECRET")
@@ -43,46 +45,61 @@ func ComparePassword(hashed string, val string) bool {
 	}
 }
 
-func GenerateToken(user types.User) (string, uuid.UUID, time.Time, error) {
-	secret := logger.GetEnv("AUTH_SECRET")
-
-	if secret == "" {
-		secret = "default_secret"
-	}
-
-	// Generate a unique session ID
+func GenerateSession() (struct {
+	SessionId  uuid.UUID
+	RefreshJwt string
+	Expiry     time.Time
+}, error) {
 	sessionId := uuid.New()
 	expiry := time.Now().Add(SESSION_LIFETIME)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"data":      user,
-		"sessionId": sessionId.String(),
-		"exp":       jwt.NewNumericDate(expiry),
-		"iat":       jwt.NewNumericDate(time.Now()),
-		"jti":       "cloud-metric",
-	})
+	secret := logger.GetEnv("JWT_SECRET")
 
-	tokenString, err := token.SignedString([]byte(secret))
-	return tokenString, sessionId, expiry, err
-}
+	fmt.Println("Generating session")
 
-// ValidateToken verifies if a token is valid
-func ValidateToken(tokenString string) (*jwt.Token, error) {
-	secret := logger.GetEnv("AUTH_SECRET")
 	if secret == "" {
 		secret = "default_secret"
 	}
 
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
-		// Validate signing method
+	refreshJwt, err := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
+		"session_id": sessionId,
+		"exp":        time.Now().Add(REFRESH_LIFETIME).Unix(),
+		"iat":        time.Now().Unix(),
+		"iss":        "cloud-metric",
+	}).SignedString([]byte(secret))
+
+	return struct {
+		SessionId  uuid.UUID
+		RefreshJwt string
+		Expiry     time.Time
+	}{
+		SessionId:  sessionId,
+		RefreshJwt: refreshJwt,
+		Expiry:     expiry,
+	}, err
+}
+
+func ParseJWT(token string) (jwt.MapClaims, error) {
+	secret := logger.GetEnv("JWT_SECRET")
+	if secret == "" {
+		secret = "default_secret"
+	}
+
+	claims := jwt.MapClaims{}
+
+	parsedToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, jwt.ErrSignatureInvalid
+			return nil, jwt.NewValidationError("unexpected signing method", jwt.ValidationErrorSignatureInvalid)
 		}
 		return []byte(secret), nil
 	})
 
-	return token, err
-}
+	if err != nil {
+		return nil, err
+	}
 
-func GenerateSessionId() (uuid.UUID, uuid.UUID, time.Time) {
-	return uuid.New(), uuid.New(), time.Now().Add(SESSION_LIFETIME)
+	if claims, ok := parsedToken.Claims.(jwt.MapClaims); ok && parsedToken.Valid {
+		return claims, nil
+	} else {
+		return nil, err
+	}
 }

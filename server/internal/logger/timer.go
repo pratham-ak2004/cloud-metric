@@ -3,6 +3,8 @@ package logger
 import (
 	"net/http"
 	"time"
+
+	"github.com/pratham-ak2004/cloud-metric/server/internal/cors"
 )
 
 var logger = Logger
@@ -12,18 +14,18 @@ func Timer(method string, next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 
-		next(w, r)
+		cors.CorsMiddleware(next).ServeHTTP(w, r)
 
-		end := time.Since(start).Microseconds()
+		end := time.Since(start).Milliseconds()
 		var timeColor string
-		if end < 1000 {
+		if end < 100 {
 			timeColor = colors["green"]
-		} else if end < 10000 {
+		} else if end < 500 {
 			timeColor = colors["yellow"]
 		} else {
 			timeColor = colors["red"]
 		}
 
-		logger.Printf("%s %d%s %s %s", timeColor, end, "µs", method, colors["reset"]+r.URL.Path)
+		logger.Printf("%s %d%s %s %s", timeColor, end, "ms", method, colors["reset"]+r.URL.Path)
 	}
 }
