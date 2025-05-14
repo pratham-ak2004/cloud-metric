@@ -14,12 +14,10 @@ export default function ThemeToggle() {
       variant={"ghost"}
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
-      {theme === "light" ? (
+      {theme === "dark" ? (
         <Sun className="size-6" />
-      ) : theme === "dark" ? (
-        <Moon className="size-6" />
       ) : (
-        <Laptop className="size-6" />
+        <Moon className="size-6" />
       )}
     </Button>
   );

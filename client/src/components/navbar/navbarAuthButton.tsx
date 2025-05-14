@@ -10,8 +10,6 @@ export default function NavbarAuthButton() {
   const router = useRouter();
   const session = useSession();
 
-  // console.log(session);
-
   return (
     <div className="flex flex-row gap-4 w-fit">
       {session.status === "loading" && (

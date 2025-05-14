@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "~/components/navbar/navbar";
-import { ThemeProvider } from "../themeProvider/themeProvider";
+import { ThemeProvider } from "../providers/themeProvider";
 import Footer from "~/components/footer/footer";
 
 export default function CustomRootLayout({
@@ -11,7 +11,7 @@ export default function CustomRootLayout({
   return (
     <ThemeProvider
       attribute="class"
-      defaultTheme="system"
+      defaultTheme="light"
       enableSystem
       disableTransitionOnChange
     >

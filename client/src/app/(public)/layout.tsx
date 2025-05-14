@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import "./globals.css";
-import CustomRootLayout from "~/components/layout/rootLayout/customRootLayout";
+import "../globals.css";
+import CustomRootLayout from "~/components/layout/customRootLayout";
 
 export const metadata: Metadata = {
   title: "Cloud Metric",

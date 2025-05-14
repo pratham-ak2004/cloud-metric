@@ -2,8 +2,8 @@ import Link from "next/link";
 import React from "react";
 
 import ThemeToggle from "./themeToggle";
-import NavbarAuthButton from "../authButton/navbarAuthButton";
-import { Button } from "~/components/ui/button";
+import NavbarAuthButton from "./navbarAuthButton";
+import NavLogo from "../logo/logo";
 
 export const navItems = [
   {
@@ -20,14 +20,8 @@ export default function Navbar() {
   return (
     <>
       <header className="w-full h-fit py-6 px-4 fixed top-0 left-0 backdrop-blur-md z-10">
-        <nav className="w-full flex flex-row justify-between items-center">
-          <Link
-            href={"/"}
-            aria-label="Brand Name"
-            className="text-2xl font-bold font-play"
-          >
-            Cloud Metric
-          </Link>
+        <nav className="w-full flex flex-row justify-between items-center max-w-7xl mx-auto">
+          <NavLogo />
           <div className="w-fit flex flex-row gap-4">
             <div className="flex flex-row items-center gap-6">
               {navItems.map((item, idx) => (
