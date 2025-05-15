@@ -2,7 +2,6 @@ import { Info } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import SignUpForm from "~/components/forms/signUpForm";
-import { Button } from "~/components/ui/button";
 
 export default function SignUpPage() {
   return (
@@ -21,7 +20,7 @@ export default function SignUpPage() {
           <span className="text-muted-foreground">
             Already have an account?
           </span>
-          <Link href="/login" className="text-primary underline ml-1">
+          <Link href="/auth/login" className="text-primary underline ml-1">
             Sign in
           </Link>
         </div>

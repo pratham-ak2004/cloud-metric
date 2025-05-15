@@ -1,10 +1,10 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { SignInFormSchema } from "~/zod/formSchema";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -17,12 +17,26 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { Input } from "~/components/ui/input";
-import { useSession } from "~/hooks/useSession";
 import { SignIn } from "~/lib/auth";
+import { useSession } from "~/hooks/useSession";
 
 export default function SignInForm() {
   const router = useRouter();
-  const { refresh } = useSession();
+  const queryParams = useSearchParams();
+  const { status } = useSession();
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      const redirect = queryParams.get("redirect");
+
+      if (redirect) {
+        router.push(redirect);
+      } else {
+        router.push("/");
+      }
+    }
+  }, [status]);
+
   const form = useForm<z.infer<typeof SignInFormSchema>>({
     resolver: zodResolver(SignInFormSchema),
     defaultValues: {
@@ -42,8 +56,12 @@ export default function SignInForm() {
     if (res.status === 200) {
       form.reset();
 
-      if (res.redirect) {
-        router.push(res.redirect);
+      const redirect = queryParams.get("redirect");
+
+      if (redirect) {
+        router.push(redirect);
+      } else {
+        router.push("/");
       }
     } else {
       // TODO: handle Error UI

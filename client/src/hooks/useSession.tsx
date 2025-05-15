@@ -1,24 +1,11 @@
 "use client";
 import { useState, useEffect } from "react";
-
-type UserData = {
-  id: string;
-  name: string;
-  email: string;
-};
-
-type AuthStatus = "authenticated" | "unauthenticated" | "loading";
-
-type UseSessionReturn = {
-  data: UserData | null;
-  status: AuthStatus;
-  error: string | null;
-  refresh: () => Promise<void>;
-};
-
-type CacheEntry = {
-  data: UserData;
-};
+import type {
+  User,
+  AuthStatus,
+  UseSessionReturn,
+  CacheEntry,
+} from "~/zod/types";
 
 // Create a custom event for session changes
 const SESSION_CHANGE_EVENT = "session-change";
@@ -33,14 +20,14 @@ export const sessionEvents = {
 };
 
 const cache: { [key: string]: CacheEntry } = {};
-let globalPromise: Promise<{ user: UserData }> | null = null;
+let globalPromise: Promise<{ user: User }> | null = null;
 
 export const useSession = (): UseSessionReturn => {
-  const [data, setData] = useState<UserData | null>(null);
+  const [data, setData] = useState<User | null>(null);
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [error, setError] = useState<string | null>(null);
 
-  const fetchUserData = async (forceRefresh = false) => {
+  const fetchUser = async (forceRefresh = false) => {
     const cachedData = cache["user"];
 
     if (!forceRefresh && cachedData) {
@@ -64,7 +51,7 @@ export const useSession = (): UseSessionReturn => {
           }
           return response.json();
         })
-        .then(({ user }: { user: UserData }) => {
+        .then(({ user }: { user: User }) => {
           cache["user"] = {
             data: user,
           };
@@ -76,8 +63,8 @@ export const useSession = (): UseSessionReturn => {
     }
 
     try {
-      const userData = await globalPromise;
-      setData(userData.user);
+      const User = await globalPromise;
+      setData(User.user);
       setStatus("authenticated");
     } catch (err) {
       setError((err as Error).message);
@@ -92,11 +79,11 @@ export const useSession = (): UseSessionReturn => {
     setData(null);
     setStatus("loading");
     setError(null);
-    await fetchUserData(true);
+    await fetchUser(true);
   };
 
   useEffect(() => {
-    fetchUserData();
+    fetchUser();
   }, []);
 
   // Listen for session change events

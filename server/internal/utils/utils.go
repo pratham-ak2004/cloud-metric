@@ -10,7 +10,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-const SESSION_LIFETIME = 1 * 24 * time.Hour  // 1 day
+const SESSION_LIFETIME = 10 * time.Second    // 1 day
 const REFRESH_LIFETIME = 30 * 24 * time.Hour // 30 days
 
 const SESSION_TOKEN_NAME = "session_id"

@@ -14,11 +14,10 @@ export default function LoginPage() {
       </div>
 
       <div className="bg-secondary border border-primary-foreground p-6 rounded-lg">
-        {/* <SignUpForm /> */}
         <SignInForm />
         <div className="text-center text-sm mt-4">
           <span className="text-muted-foreground">Don't have an account?</span>
-          <Link href="/signup" className="text-primary underline ml-1">
+          <Link href="/auth/signup" className="text-primary underline ml-1">
             Sign up
           </Link>
         </div>

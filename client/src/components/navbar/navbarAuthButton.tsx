@@ -20,22 +20,13 @@ export default function NavbarAuthButton() {
       {session.status === "unauthenticated" && (
         <>
           <Button
-            variant={"secondary"}
+            variant={"default"}
             onClick={() => {
-              router.push("/login");
+              router.push("/auth");
             }}
             className="border font-semibold"
           >
-            Login
-          </Button>
-          <Button
-            variant={"default"}
-            onClick={() => {
-              router.push("/signup");
-            }}
-            className="font-semibold"
-          >
-            Sign Up
+            Sign In
           </Button>
         </>
       )}
