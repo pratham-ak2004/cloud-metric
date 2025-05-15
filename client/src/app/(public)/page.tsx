@@ -3,7 +3,7 @@ import { Button } from "~/components/ui/button";
 
 export default function Home() {
   return (
-    <main className="max-w-6xl mx-auto px-4 py-20 text-center">
+    <section className="max-w-6xl mx-auto px-4 py-20 text-center">
       <h2 className="text-4xl mb-4">
         Welcome to <span className="font-play font-semibold">cloud metric</span>
       </h2>
@@ -33,6 +33,6 @@ export default function Home() {
           Ping
         </Button>
       </div>
-    </main>
+    </section>
   );
 }

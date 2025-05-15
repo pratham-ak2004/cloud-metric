@@ -6,8 +6,15 @@ import { getServerSession } from "./server/auth";
 export async function middleware(request: NextRequest) {
   const user = await getServerSession();
 
+  if (request.nextUrl.pathname === "/") {
+    if (user.status === "authenticated") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+  }
+
   if (request.nextUrl.pathname.endsWith("/auth")) {
-    const redirect = request.nextUrl.searchParams.get("redirect") ?? "/";
+    const redirect =
+      request.nextUrl.searchParams.get("redirect") ?? "/dashboard";
 
     if (user.status === "authenticated") {
       return NextResponse.redirect(new URL(redirect, request.url));
@@ -19,7 +26,8 @@ export async function middleware(request: NextRequest) {
   }
 
   if (request.nextUrl.pathname.startsWith("/auth")) {
-    const redirect = request.nextUrl.searchParams.get("redirect") ?? "/";
+    const redirect =
+      request.nextUrl.searchParams.get("redirect") ?? "/dashboard";
 
     if (user.status === "authenticated") {
       return NextResponse.redirect(new URL(redirect, request.url));
@@ -30,5 +38,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/auth", "/auth/:path"],
+  matcher: ["/auth", "/auth/:path", "/"],
 };

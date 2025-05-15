@@ -32,7 +32,7 @@ export default function SignInForm() {
       if (redirect) {
         router.push(redirect);
       } else {
-        router.push("/");
+        router.push("/dashboard");
       }
     }
   }, [status]);
@@ -61,7 +61,7 @@ export default function SignInForm() {
       if (redirect) {
         router.push(redirect);
       } else {
-        router.push("/");
+        router.push("/dashboard");
       }
     } else {
       // TODO: handle Error UI

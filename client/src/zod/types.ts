@@ -17,8 +17,14 @@ export type CacheEntry = {
   data: User;
 };
 
-export type ServerSessionReturn = {
-  data: User | null;
-  status: AuthStatus;
-  error: string | null;
-};
+export type ServerSessionReturn =
+  | {
+      data: User;
+      status: "authenticated";
+      error: null;
+    }
+  | {
+      data: null;
+      status: "unauthenticated" | "loading";
+      error: string | null;
+    };

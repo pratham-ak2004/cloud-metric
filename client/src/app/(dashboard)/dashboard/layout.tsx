@@ -1,11 +1,28 @@
 import type { Metadata } from "next";
 import "../../globals.css";
 import DashBoardLayout from "~/components/layout/dashboardLayout";
+import { getServerSession } from "~/server/auth";
 
-export const metadata: Metadata = {
-  title: "Cloud Metric",
-  description: "One place to monitor all your model metrics",
-};
+export async function generateMetadata() {
+  const user = await getServerSession();
+
+  const template =
+    user.status === "authenticated"
+      ? `${user.data.name} | %s`
+      : "Cloud Metric | %s";
+  const defaultValue =
+    user.status === "authenticated"
+      ? `${user.data.name} | Dashboard`
+      : "Cloud Metric | Dashboard";
+
+  return {
+    title: {
+      template: template,
+      default: defaultValue,
+    },
+    description: "Cloud Metric Dashboard",
+  } satisfies Metadata;
+}
 
 export default function RootLayout({
   children,

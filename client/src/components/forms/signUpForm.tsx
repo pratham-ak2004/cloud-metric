@@ -54,7 +54,7 @@ export default function SignUpForm() {
 
     if (res.ok) {
       form.reset();
-      router.push("/login");
+      router.push("/auth/login");
     } else {
       // TODO: handle Error UI
       if (res.status === 409) {

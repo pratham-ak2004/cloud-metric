@@ -3,7 +3,7 @@ import React from "react";
 
 import ThemeToggle from "./themeToggle";
 import NavbarAuthButton from "./navbarAuthButton";
-import NavLogo from "../logo/logo";
+import Logo from "../logo/logo";
 
 export const navItems = [
   {
@@ -21,7 +21,7 @@ export default function Navbar() {
     <>
       <header className="w-full h-fit py-6 px-4 fixed top-0 left-0 backdrop-blur-md z-10">
         <nav className="w-full flex flex-row justify-between items-center max-w-7xl mx-auto">
-          <NavLogo />
+          <Logo className="h-10" />
           <div className="w-fit flex flex-row gap-4">
             <div className="flex flex-row items-center gap-6">
               {navItems.map((item, idx) => (

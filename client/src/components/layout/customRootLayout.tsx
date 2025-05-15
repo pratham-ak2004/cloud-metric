@@ -15,9 +15,11 @@ export default function CustomRootLayout({
       enableSystem
       disableTransitionOnChange
     >
-      <Navbar />
-      <main>{children}</main>
-      <Footer />
+      <main>
+        <Navbar />
+        {children}
+        <Footer />
+      </main>
     </ThemeProvider>
   );
 }

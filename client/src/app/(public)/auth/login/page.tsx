@@ -4,7 +4,7 @@ import SignInForm from "~/components/forms/loginForm";
 
 export default function LoginPage() {
   return (
-    <main className="max-w-md mx-auto px-4 py-20">
+    <section className="max-w-md mx-auto px-4 py-20">
       <div className="text-center mb-8">
         <h2 className="text-3xl mb-2">Create an Account</h2>
         <p className="text-muted-foreground">
@@ -22,6 +22,6 @@ export default function LoginPage() {
           </Link>
         </div>
       </div>
-    </main>
+    </section>
   );
 }
